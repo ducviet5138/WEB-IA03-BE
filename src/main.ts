@@ -6,12 +6,20 @@ import { Logger } from '@nestjs/common';
 import { MainModule } from './main.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(MainModule);
+  const app = await NestFactory.create(MainModule, {
+    cors: {
+      origin: process.env.CORS_ORIGIN,
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
+      credentials: true,
+    },
+  });
   app.useGlobalInterceptors(new TransformResponseInterceptor(new Reflector()));
   app.useGlobalInterceptors(new ExceptionHandlerInterceptor());
   app.useGlobalPipes(ThrowFirstErrorValidationPipe);
   await app.listen(3000);
-  Logger.log(`🚀 Main application is running on: http://localhost:3000`)
+  Logger.log(`🚀 Main application is running on: http://localhost:3000`);
 }
 
 bootstrap();

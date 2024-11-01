@@ -18,6 +18,11 @@ export class UserService {
 
   async registerUser(dto: RegisterDto) {
     try {
+      const existedUser = await this.userModel.findOne({ email: dto.email });
+      if (existedUser) {
+        throw new Error('User already exists');
+      }
+      
       const newUser = await this.userModel.create({
         email: dto.email,
         password: await hashPassword(dto.password),
